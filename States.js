@@ -4,9 +4,13 @@ const stateSchema = new mongoose.Schema({
     stateCode: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        index: true  
     },
-    funfacts: [String]
+    funfacts: {
+        type: [String],
+        default: []  
+    }
 });
 
 const States = mongoose.model('States', stateSchema, 'states'); 
