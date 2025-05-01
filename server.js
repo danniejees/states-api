@@ -21,7 +21,9 @@ mongoose.connect(process.env.MONGODB_URI, {
   .catch(err => console.log("MongoDB connection error:", err));
 
 const validateState = (req, res, next) => {
-    const state = req.params.state.toUpperCase();
+    const state = req.params.state ? req.params.state.toUpperCase() : null;
+    console.log('Received state:', state);  
+
     const validStateCodes = statesData.map(state => state.stateCode.toUpperCase());
 
     if (!validStateCodes.includes(state)) {
@@ -29,8 +31,9 @@ const validateState = (req, res, next) => {
     }
 
     req.state = state;  
-    next(); 
+    next();
 };
+
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));  
