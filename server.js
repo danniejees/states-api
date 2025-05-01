@@ -34,7 +34,6 @@ const validateState = (req, res, next) => {
     next();
 };
 
-
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));  
 });
@@ -54,8 +53,8 @@ app.get('/states/', async (req, res) => {
 
 app.get('/states/:state', validateState, async (req, res) => {
     const state = req.state; 
-    const stateData = statesData.find((s) => s.stateCode === state);
-    
+    const stateData = statesData.find((s) => s.stateCode.toUpperCase() === state.toUpperCase());  
+
     if (!stateData) {
         return res.status(404).json({ error: 'State not found' });
     }
