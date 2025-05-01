@@ -12,7 +12,6 @@ const cors = require('cors');
 app.use(cors());  
 
 app.use(express.json());
-
 app.use(express.static(path.join(__dirname)));  
 
 mongoose.connect(process.env.MONGODB_URI, { 
@@ -31,10 +30,7 @@ const validateState = (req, res, next) => {
     const state = req.params.state ? req.params.state.toUpperCase() : null;
     console.log('Received state:', state);  
 
-    const validStateCodes = statesData
-  .filter(state => state.stateCode) 
-  .map(state => state.stateCode.toUpperCase());
-
+    const validStateCodes = statesData.map(state => state.code.toUpperCase());
 
     if (!validStateCodes.includes(state)) {
         return res.status(400).json({ error: 'Invalid state abbreviation' });
@@ -53,9 +49,9 @@ app.get('/states/', async (req, res) => {
     let filteredStates = statesData;
 
     if (contig === 'true') {
-        filteredStates = statesData.filter(state => !['AK', 'HI'].includes(state.stateCode));
+        filteredStates = statesData.filter(state => !['AK', 'HI'].includes(state.code));
     } else if (contig === 'false') {
-        filteredStates = statesData.filter(state => ['AK', 'HI'].includes(state.stateCode));
+        filteredStates = statesData.filter(state => ['AK', 'HI'].includes(state.code));
     }
 
     res.json(filteredStates);
@@ -63,7 +59,7 @@ app.get('/states/', async (req, res) => {
 
 app.get('/states/:state', validateState, async (req, res) => {
     const state = req.state; 
-    const stateData = statesData.find((s) => s.stateCode.toUpperCase() === state.toUpperCase());  
+    const stateData = statesData.find((s) => s.code.toUpperCase() === state);
 
     if (!stateData) {
         return res.status(404).json({ error: 'State not found' });
