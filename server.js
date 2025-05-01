@@ -29,6 +29,10 @@ const validateState = (req, res, next) => {
     next(); 
 };
 
+app.get('/', (req, res) => {
+    res.send('<h1>Welcome to the US States API</h1>');
+});
+
 app.get('/states/', async (req, res) => {
     const contig = req.query.contig;
     let filteredStates = statesData;
