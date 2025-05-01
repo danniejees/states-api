@@ -31,7 +31,10 @@ const validateState = (req, res, next) => {
     const state = req.params.state ? req.params.state.toUpperCase() : null;
     console.log('Received state:', state);  
 
-    const validStateCodes = statesData.map(state => state.stateCode.toUpperCase());
+    const validStateCodes = statesData
+  .filter(state => state.stateCode) 
+  .map(state => state.stateCode.toUpperCase());
+
 
     if (!validStateCodes.includes(state)) {
         return res.status(400).json({ error: 'Invalid state abbreviation' });
