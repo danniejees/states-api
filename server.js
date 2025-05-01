@@ -15,10 +15,15 @@ app.use(express.static(path.join(__dirname)));
 mongoose.connect(process.env.MONGODB_URI, { 
     useNewUrlParser: true, 
     useUnifiedTopology: true,
-    dbName: 'statesDB'  
+    dbName: 'statesDB',
+    serverSelectionTimeoutMS: 5000  
 })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch(err => console.log("MongoDB connection error:", err));
+.then(() => console.log("Connected to MongoDB"))
+.catch(err => {
+    console.error("MongoDB connection error:", err);
+    process.exit(1);  
+});
+
 
 const validateState = (req, res, next) => {
     const state = req.params.state ? req.params.state.toUpperCase() : null;
