@@ -1,8 +1,7 @@
-
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const States = require('./States');
+const States = require('./States'); 
 const statesData = require('./statesData.json');
 
 dotenv.config();
@@ -10,7 +9,11 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URI, { 
+    useNewUrlParser: true, 
+    useUnifiedTopology: true,
+    dbName: 'statesDB'  
+})
   .then(() => console.log("Connected to MongoDB"))
   .catch(err => console.log("MongoDB connection error:", err));
 
