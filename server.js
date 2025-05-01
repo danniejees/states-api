@@ -142,7 +142,7 @@ app.delete('/states/:state/funfact', validateState, async (req, res) => {
     res.json(stateData);
 });
 
-app.all('*', (req, res) => {
+app.all('/*', (req, res) => {
     if (req.accepts('json')) {
         return res.status(404).json({ error: '404 Not Found' });
     }
