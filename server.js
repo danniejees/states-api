@@ -33,7 +33,7 @@ const validateState = (req, res, next) => {
     const validStateCodes = statesData.map(state => state.code.toUpperCase());
 
     if (!validStateCodes.includes(state)) {
-        return res.status(400).json({ error: 'Invalid state abbreviation' });
+        return res.status(400).json({ error: 'Invalid state abbreviation parameter' });
     }
 
     req.state = state;  
@@ -69,6 +69,8 @@ app.get('/states/:state', validateState, async (req, res) => {
 
     if (funfacts) {
         stateData.funfacts = funfacts.funfacts;
+    } else {
+        stateData.funfacts = []; 
     }
 
     res.json(stateData);
@@ -79,7 +81,7 @@ app.get('/states/:state/funfact', validateState, async (req, res) => {
     const funfacts = await States.findOne({ stateCode: state });
 
     if (!funfacts || funfacts.funfacts.length === 0) {
-        return res.status(404).json({ error: 'No fun facts available for this state' });
+        return res.status(404).json({ error: `No Fun Facts found for ${state}` });
     }
 
     const randomFact = funfacts.funfacts[Math.floor(Math.random() * funfacts.funfacts.length)];
@@ -91,7 +93,7 @@ app.post('/states/:state/funfact', validateState, async (req, res) => {
     const { funfacts } = req.body;
 
     if (!funfacts || !Array.isArray(funfacts)) {
-        return res.status(400).json({ error: 'Fun facts must be an array' });
+        return res.status(400).json({ error: 'State fun facts value must be an array' });
     }
 
     const stateData = await States.findOneAndUpdate(
@@ -108,12 +110,12 @@ app.patch('/states/:state/funfact', validateState, async (req, res) => {
     const { index, funfact } = req.body;
 
     if (typeof index !== 'number' || !funfact) {
-        return res.status(400).json({ error: 'Invalid input' });
+        return res.status(400).json({ error: 'State fun fact index value required and valid funfact' });
     }
 
     const stateData = await States.findOne({ stateCode: state });
     if (!stateData || !stateData.funfacts[index - 1]) {
-        return res.status(404).json({ error: 'Fun fact not found' });
+        return res.status(404).json({ error: 'No Fun Fact found at that index for ' + state });
     }
 
     stateData.funfacts[index - 1] = funfact;
@@ -127,18 +129,74 @@ app.delete('/states/:state/funfact', validateState, async (req, res) => {
     const { index } = req.body;
 
     if (typeof index !== 'number') {
-        return res.status(400).json({ error: 'Invalid input' });
+        return res.status(400).json({ error: 'State fun fact index value required' });
     }
 
     const stateData = await States.findOne({ stateCode: state });
     if (!stateData || !stateData.funfacts[index - 1]) {
-        return res.status(404).json({ error: 'Fun fact not found' });
+        return res.status(404).json({ error: 'No Fun Fact found at that index for ' + state });
     }
 
     stateData.funfacts.splice(index - 1, 1);
     await stateData.save();
 
     res.json(stateData);
+});
+
+app.get('/states/:state/capital', validateState, async (req, res) => {
+    const state = req.state; 
+    const stateData = statesData.find((s) => s.code.toUpperCase() === state);
+
+    if (!stateData) {
+        return res.status(404).json({ error: 'Invalid state abbreviation parameter' });
+    }
+
+    res.json({
+        state: stateData.state,
+        capital: stateData.capital
+    });
+});
+
+app.get('/states/:state/nickname', validateState, async (req, res) => {
+    const state = req.state; 
+    const stateData = statesData.find((s) => s.code.toUpperCase() === state);
+
+    if (!stateData) {
+        return res.status(404).json({ error: 'Invalid state abbreviation parameter' });
+    }
+
+    res.json({
+        state: stateData.state,
+        nickname: stateData.nickname
+    });
+});
+
+app.get('/states/:state/population', validateState, async (req, res) => {
+    const state = req.state; 
+    const stateData = statesData.find((s) => s.code.toUpperCase() === state);
+
+    if (!stateData) {
+        return res.status(404).json({ error: 'Invalid state abbreviation parameter' });
+    }
+
+    res.json({
+        state: stateData.state,
+        population: stateData.population.toLocaleString()
+    });
+});
+
+app.get('/states/:state/admission', validateState, async (req, res) => {
+    const state = req.state; 
+    const stateData = statesData.find((s) => s.code.toUpperCase() === state);
+
+    if (!stateData) {
+        return res.status(404).json({ error: 'Invalid state abbreviation parameter' });
+    }
+
+    res.json({
+        state: stateData.state,
+        admitted: stateData.admitted
+    });
 });
 
 app.all('/*', (req, res) => {
