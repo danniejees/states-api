@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US States API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .state-info, .funfact-info {
+            margin-top: 20px;
+        }
+        .funfact-info {
+            font-style: italic;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>US States API</h1>
+        
+        <button onclick="getStates()">Fetch States</button>
+        <button onclick="getFunFact()">Get Fun Fact</button>
+        
+        <div class="state-info">
+            <h3>State Information</h3>
+            <div id="state-data"></div>
+        </div>
+
+        <div class="funfact-info">
+            <h3>Fun Fact</h3>
+            <div id="funfact-data"></div>
+        </div>
+        
+        <div class="error" id="error-message"></div>
+    </div>
+
+    <script>
+        async function getStates() {
+            try {
+                const response = await fetch('/states');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch states');
+                }
+                const states = await response.json();
+                const stateDataDiv = document.getElementById('state-data');
+                stateDataDiv.innerHTML = '<pre>' + JSON.stringify(states, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('error-message').textContent = error.message;
+            }
+        }
+
+        async function getFunFact() {
+            const stateCode = prompt("Enter state abbreviation (e.g., CA, NY, TX):").toUpperCase();
+            try {
+                const response = await fetch(`/states/${stateCode}/funfact`);
+                if (!response.ok) {
+                    throw new Error('Fun fact not available or state not found');
+                }
+                const data = await response.json();
+                document.getElementById('funfact-data').innerText = data.funfact;
+            } catch (error) {
+                document.getElementById('error-message').textContent = error.message;
+            }
+        }
+    </script>
+</body>
+</html>
