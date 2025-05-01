@@ -17,6 +17,17 @@ mongoose.connect(process.env.MONGODB_URI, {
   .then(() => console.log("Connected to MongoDB"))
   .catch(err => console.log("MongoDB connection error:", err));
 
+const validateState = (req, res, next) => {
+    const state = req.params.state.toUpperCase();
+    const validStateCodes = statesData.map(state => state.stateCode.toUpperCase());
+
+    if (!validStateCodes.includes(state)) {
+        return res.status(400).json({ error: 'Invalid state abbreviation' });
+    }
+
+    req.state = state;  
+    next(); 
+};
 
 app.get('/states/', async (req, res) => {
     const contig = req.query.contig;
@@ -31,8 +42,8 @@ app.get('/states/', async (req, res) => {
     res.json(filteredStates);
 });
 
-app.get('/states/:state', async (req, res) => {
-    const state = req.params.state.toUpperCase();
+app.get('/states/:state', validateState, async (req, res) => {
+    const state = req.state; 
     const stateData = statesData.find((s) => s.stateCode === state);
     
     if (!stateData) {
@@ -48,8 +59,8 @@ app.get('/states/:state', async (req, res) => {
     res.json(stateData);
 });
 
-app.get('/states/:state/funfact', async (req, res) => {
-    const state = req.params.state.toUpperCase();
+app.get('/states/:state/funfact', validateState, async (req, res) => {
+    const state = req.state; 
     const funfacts = await States.findOne({ stateCode: state });
 
     if (!funfacts || funfacts.funfacts.length === 0) {
@@ -60,8 +71,8 @@ app.get('/states/:state/funfact', async (req, res) => {
     res.json({ funfact: randomFact });
 });
 
-app.post('/states/:state/funfact', async (req, res) => {
-    const state = req.params.state.toUpperCase();
+app.post('/states/:state/funfact', validateState, async (req, res) => {
+    const state = req.state; 
     const { funfacts } = req.body;
 
     if (!funfacts || !Array.isArray(funfacts)) {
@@ -77,8 +88,8 @@ app.post('/states/:state/funfact', async (req, res) => {
     res.json(stateData);
 });
 
-app.patch('/states/:state/funfact', async (req, res) => {
-    const state = req.params.state.toUpperCase();
+app.patch('/states/:state/funfact', validateState, async (req, res) => {
+    const state = req.state; 
     const { index, funfact } = req.body;
 
     if (typeof index !== 'number' || !funfact) {
@@ -96,8 +107,8 @@ app.patch('/states/:state/funfact', async (req, res) => {
     res.json(stateData);
 });
 
-app.delete('/states/:state/funfact', async (req, res) => {
-    const state = req.params.state.toUpperCase();
+app.delete('/states/:state/funfact', validateState, async (req, res) => {
+    const state = req.state; 
     const { index } = req.body;
 
     if (typeof index !== 'number') {
