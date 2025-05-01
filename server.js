@@ -7,7 +7,10 @@ const path = require('path');
 
 dotenv.config();
 
-const app = express();
+const app = express(); 
+const cors = require('cors');
+app.use(cors());  
+
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname)));  
@@ -23,7 +26,6 @@ mongoose.connect(process.env.MONGODB_URI, {
     console.error("MongoDB connection error:", err);
     process.exit(1);  
 });
-
 
 const validateState = (req, res, next) => {
     const state = req.params.state ? req.params.state.toUpperCase() : null;
