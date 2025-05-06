@@ -95,17 +95,26 @@ app.get('/states/:state', validateState, async (req, res) => {
 
 app.get('/states/:state/funfact', validateState, async (req, res) => {
     const state = req.state;
+    const stateData = statesData.find((s) => s.code.toUpperCase() === state);  
+
+    if (!stateData) {
+        return res.status(404).json({
+            message: `No Fun Facts found for ${stateData.state}`
+        });
+    }
+
     const funfacts = await States.findOne({ stateCode: state });
 
     if (!funfacts || funfacts.funfacts.length === 0) {
         return res.status(404).json({
-            message: `No Fun Facts found for ${state}`
+            message: `No Fun Facts found for ${stateData.state}`  
         });
     }
 
     const randomFact = funfacts.funfacts[Math.floor(Math.random() * funfacts.funfacts.length)];
     res.json({ funfact: randomFact });
 });
+
 
 
 app.post('/states/:state/funfact', validateState, async (req, res) => {
