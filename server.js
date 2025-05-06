@@ -228,7 +228,7 @@ app.get('/states/:state/admission', validateState, async (req, res) => {
 
     res.json({
         state: stateData.state,
-        admitted: stateData.admitted
+        admitted: stateData.admission_date
     });
 });
 
