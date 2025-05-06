@@ -179,19 +179,13 @@ app.delete('/states/:state/funfact', validateState, async (req, res) => {
     res.json(stateData);
 });
 
-app.get('/states/:state/capital', validateState, async (req, res) => {
-    const state = req.state; 
-    const stateData = statesData.find((s) => s.code.toUpperCase() === state);
-
-    if (!stateData) {
-        return res.status(404).json({ error: 'Invalid state abbreviation parameter' });
-    }
-
+app.get('/states/:state/capital', validateState, (req, res) => {
     res.json({
-        state: stateData.state,
-        capital: stateData.capital
+        state: req.stateName,
+        capital: statesData.find(s => s.code.toUpperCase() === req.state).capital
     });
 });
+
 
 app.get('/states/:state/nickname', validateState, async (req, res) => {
     const state = req.state; 
