@@ -199,12 +199,10 @@ app.get('/states/:state/admission', validateState, async (req, res) => {
     });
 });
 
-app.all('/*', (req, res) => {
-    if (req.accepts('json')) {
-        return res.status(404).json({ error: '404 Not Found' });
-    }
-    res.status(404).send('<h1>404 Not Found</h1>');
+app.use((req, res) => {
+    res.status(404).type('html').send('<h1>404 Not Found</h1>');
 });
+
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
