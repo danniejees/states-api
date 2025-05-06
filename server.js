@@ -128,8 +128,12 @@ app.post('/states/:state/funfact', validateState, async (req, res) => {
         return res.status(400).json({ error: `Fun facts cannot be added for ${state}` });
     }
 
-    if (!funfacts || !Array.isArray(funfacts)) {
-        return res.status(400).json({ error: 'State fun facts value must be an array' });
+    if (!funfacts) {
+        return res.status(400).json({ message: 'State fun facts value required' });
+    }
+
+    if (!Array.isArray(funfacts)) {
+        return res.status(400).json({ message: 'State fun facts value must be an array' });
     }
 
     const stateData = await States.findOneAndUpdate(
@@ -143,16 +147,26 @@ app.post('/states/:state/funfact', validateState, async (req, res) => {
 
 
 app.patch('/states/:state/funfact', validateState, async (req, res) => {
-    const state = req.state; 
+    const state = req.state;
     const { index, funfact } = req.body;
 
-    if (typeof index !== 'number' || !funfact) {
-        return res.status(400).json({ error: 'State fun fact index value required and valid funfact' });
+    if (index === undefined) {
+        return res.status(400).json({ message: 'State fun fact index value required' });
+    }
+
+    if (!funfact || typeof funfact !== 'string') {
+        return res.status(400).json({ message: 'State fun fact value required' });
     }
 
     const stateData = await States.findOne({ stateCode: state });
-    if (!stateData || !stateData.funfacts[index - 1]) {
-        return res.status(404).json({ error: 'No Fun Fact found at that index for ' + state });
+    const fullState = statesData.find(s => s.code === state)?.state;
+
+    if (!stateData || !stateData.funfacts || stateData.funfacts.length === 0) {
+        return res.status(404).json({ message: `No Fun Facts found for ${fullState}` });
+    }
+
+    if (index < 1 || index > stateData.funfacts.length) {
+        return res.status(404).json({ message: `No Fun Fact found at that index for ${fullState}` });
     }
 
     stateData.funfacts[index - 1] = funfact;
@@ -161,17 +175,24 @@ app.patch('/states/:state/funfact', validateState, async (req, res) => {
     res.json(stateData);
 });
 
-app.delete('/states/:state/funfact', validateState, async (req, res) => {
-    const state = req.state; 
-    const { index } = req.body;
 
-    if (typeof index !== 'number') {
-        return res.status(400).json({ error: 'State fun fact index value required' });
+app.delete('/states/:state/funfact', validateState, async (req, res) => {
+    const state = req.state;
+    const { index } = req.body;
+    const fullState = statesData.find(s => s.code === state)?.state;
+
+    if (index === undefined) {
+        return res.status(400).json({ message: 'State fun fact index value required' });
     }
 
     const stateData = await States.findOne({ stateCode: state });
-    if (!stateData || !stateData.funfacts[index - 1]) {
-        return res.status(404).json({ error: 'No Fun Fact found at that index for ' + state });
+
+    if (!stateData || !stateData.funfacts || stateData.funfacts.length === 0) {
+        return res.status(404).json({ message: `No Fun Facts found for ${fullState}` });
+    }
+
+    if (index < 1 || index > stateData.funfacts.length) {
+        return res.status(404).json({ message: `No Fun Fact found at that index for ${fullState}` });
     }
 
     stateData.funfacts.splice(index - 1, 1);
@@ -179,15 +200,6 @@ app.delete('/states/:state/funfact', validateState, async (req, res) => {
 
     res.json(stateData);
 });
-
-app.get('/states/:state/capital', validateState, (req, res) => {
-    const stateData = statesData.find(s => s.code === req.state);
-    res.json({
-        state: req.stateName,
-        capital: stateData.capital_city
-    });
-});
-
 
 
 app.get('/states/:state/nickname', validateState, async (req, res) => {
