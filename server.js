@@ -54,8 +54,19 @@ app.get('/states/', async (req, res) => {
         filteredStates = statesData.filter(state => ['AK', 'HI'].includes(state.code));
     }
 
-    res.json(filteredStates);
+    const funFactsFromDB = await States.find({});
+
+    const mergedStates = filteredStates.map(state => {
+        const dbMatch = funFactsFromDB.find(entry => entry.stateCode === state.code);
+        if (dbMatch && dbMatch.funfacts.length > 0) {
+            return { ...state, funfacts: dbMatch.funfacts };
+        }
+        return state;
+    });
+
+    res.json(mergedStates);
 });
+
 
 app.get('/states/:state', validateState, async (req, res) => {
     const state = req.state; 
