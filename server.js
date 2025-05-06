@@ -76,14 +76,16 @@ app.get('/states/:state', validateState, async (req, res) => {
         return res.status(404).json({ error: 'State not found' });
     }
 
-    stateData = {
-        ...stateData,
-        funfacts: stateData.funfacts || [],  
-        facebook_url: stateData.facebook_url || null,  
-    };
+    const funfacts = await States.findOne({ stateCode: state });
+    if (funfacts) {
+        stateData.funfacts = funfacts.funfacts; 
+    } else {
+        stateData.funfacts = []; 
+    }
 
     res.json(stateData);
 });
+
 
 
 
