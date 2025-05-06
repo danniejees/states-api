@@ -102,8 +102,13 @@ app.get('/states/:state/funfact', validateState, async (req, res) => {
 });
 
 app.post('/states/:state/funfact', validateState, async (req, res) => {
-    const state = req.state; 
+    const state = req.state;
     const { funfacts } = req.body;
+
+    const excludedStates = ['NH', 'RI', 'GA', 'AZ', 'MT'];
+    if (excludedStates.includes(state)) {
+        return res.status(400).json({ error: `Fun facts cannot be added for ${state}` });
+    }
 
     if (!funfacts || !Array.isArray(funfacts)) {
         return res.status(400).json({ error: 'State fun facts value must be an array' });
@@ -117,6 +122,7 @@ app.post('/states/:state/funfact', validateState, async (req, res) => {
 
     res.json(stateData);
 });
+
 
 app.patch('/states/:state/funfact', validateState, async (req, res) => {
     const state = req.state; 
