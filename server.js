@@ -28,7 +28,6 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 const validateState = (req, res, next) => {
     const state = req.params.state ? req.params.state.toUpperCase() : null;
-    console.log('Received state:', state);  
 
     const validStateCodes = statesData.map(state => state.code.toUpperCase());
 
@@ -39,6 +38,7 @@ const validateState = (req, res, next) => {
     req.state = state;  
     next();
 };
+
 
 
 
@@ -85,15 +85,17 @@ app.get('/states/:state', validateState, async (req, res) => {
     } else {
         stateData.funfacts = [];  
     }
-     if (state === 'NH') {
+
+    if (state === 'NH') {
         delete stateData.funfacts;  
     }
-     if (state === 'RI') {
+    if (state === 'RI') {
         delete stateData.funfacts;  
     }
 
     res.json(stateData);
 });
+
 
 
 
