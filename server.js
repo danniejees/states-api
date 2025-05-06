@@ -69,23 +69,21 @@ app.get('/states/', async (req, res) => {
 
 
 app.get('/states/:state', validateState, async (req, res) => {
-    const state = req.state; 
+    const state = req.state;
     const stateData = statesData.find((s) => s.code.toUpperCase() === state);
 
     if (!stateData) {
         return res.status(404).json({ error: 'State not found' });
     }
 
+    const stateResponse = { ...stateData };
+
     const funfacts = await States.findOne({ stateCode: state });
+    stateResponse.funfacts = funfacts?.funfacts || [];
 
-    if (funfacts) {
-        stateData.funfacts = funfacts.funfacts;
-    } else {
-        stateData.funfacts = []; 
-    }
-
-    res.json(stateData);
+    res.json(stateResponse);
 });
+
 
 app.get('/states/:state/funfact', validateState, async (req, res) => {
     const state = req.state; 
