@@ -33,12 +33,24 @@ const validateState = (req, res, next) => {
     const validStateCodes = statesData.map(state => state.code.toUpperCase());
 
     if (!validStateCodes.includes(state)) {
-        return res.status(400).json({ error: 'Invalid state abbreviation parameter' });
+        return res.status(400).type('html').send(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>Invalid State Code</title>
+            </head>
+            <body>
+                <h1>Invalid state abbreviation parameter</h1>
+            </body>
+            </html>
+        `);
     }
 
     req.state = state;  
     next();
 };
+
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));  
@@ -77,14 +89,15 @@ app.get('/states/:state', validateState, async (req, res) => {
     }
 
     const funfacts = await States.findOne({ stateCode: state });
-    if (funfacts) {
-        stateData.funfacts = funfacts.funfacts; 
+    if (funfacts && funfacts.funfacts.length > 0) {
+        stateData.funfacts = funfacts.funfacts;  
     } else {
-        stateData.funfacts = []; 
+        stateData.funfacts = [];  
     }
 
     res.json(stateData);
 });
+
 
 
 
