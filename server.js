@@ -40,9 +40,6 @@ const validateState = (req, res, next) => {
 };
 
 
-
-
-
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));  
 });
@@ -96,22 +93,20 @@ app.get('/states/:state', validateState, async (req, res) => {
     res.json(stateData);
 });
 
-
-
-
-
-
 app.get('/states/:state/funfact', validateState, async (req, res) => {
-    const state = req.state; 
+    const state = req.state;
     const funfacts = await States.findOne({ stateCode: state });
 
     if (!funfacts || funfacts.funfacts.length === 0) {
-        return res.status(404).json({ error: `No Fun Facts found for ${state}` });
+        return res.status(404).json({
+            message: `No Fun Facts found for ${state}`
+        });
     }
 
     const randomFact = funfacts.funfacts[Math.floor(Math.random() * funfacts.funfacts.length)];
     res.json({ funfact: randomFact });
 });
+
 
 app.post('/states/:state/funfact', validateState, async (req, res) => {
     const state = req.state;
