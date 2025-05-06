@@ -70,19 +70,21 @@ app.get('/states/', async (req, res) => {
 
 app.get('/states/:state', validateState, async (req, res) => {
     const state = req.state;
-    const stateData = statesData.find((s) => s.code.toUpperCase() === state);
+    let stateData = statesData.find((s) => s.code.toUpperCase() === state);
 
     if (!stateData) {
         return res.status(404).json({ error: 'State not found' });
     }
 
-    const stateResponse = { ...stateData };
+    stateData = {
+        ...stateData,
+        funfacts: stateData.funfacts || [],  
+        facebook_url: stateData.facebook_url || null,  
+    };
 
-    const funfacts = await States.findOne({ stateCode: state });
-    stateResponse.funfacts = funfacts?.funfacts || [];
-
-    res.json(stateResponse);
+    res.json(stateData);
 });
+
 
 
 app.get('/states/:state/funfact', validateState, async (req, res) => {
