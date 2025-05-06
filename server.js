@@ -94,6 +94,9 @@ app.get('/states/:state', validateState, async (req, res) => {
     } else {
         stateData.funfacts = [];  
     }
+     if (state === 'NH') {
+        delete stateData.funfacts;  
+    }
      if (state === 'RI') {
         delete stateData.funfacts;  
     }
