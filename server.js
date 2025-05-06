@@ -34,10 +34,11 @@ const validateState = (req, res, next) => {
         return res.status(400).json({ message: 'Invalid state abbreviation parameter' });
     }
 
-    req.state = stateCode;       
-    req.stateName = validState.state; 
+    req.state = stateCode;             
+    req.stateName = validState.state;  
     next();
 };
+
 
 
 
@@ -180,11 +181,13 @@ app.delete('/states/:state/funfact', validateState, async (req, res) => {
 });
 
 app.get('/states/:state/capital', validateState, (req, res) => {
+    const stateData = statesData.find(s => s.code === req.state);
     res.json({
         state: req.stateName,
-        capital: statesData.find(s => s.code.toUpperCase() === req.state).capital
+        capital: stateData.capital
     });
 });
+
 
 
 app.get('/states/:state/nickname', validateState, async (req, res) => {
