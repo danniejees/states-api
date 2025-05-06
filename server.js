@@ -199,7 +199,7 @@ app.get('/states/:state/admission', validateState, async (req, res) => {
     });
 });
 
-app.use((req, res) => {
+app.get('*', (req, res) => {
     res.status(404).type('html').send('<h1>404 Not Found</h1>');
 });
 
