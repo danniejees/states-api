@@ -199,9 +199,21 @@ app.get('/states/:state/admission', validateState, async (req, res) => {
     });
 });
 
-app.get('*', (req, res) => {
-    res.status(404).type('html').send('<h1>404 Not Found</h1>');
+app.use((req, res) => {
+    res.status(404).type('html').send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>404 Not Found</title>
+        </head>
+        <body>
+            <h1>404 Not Found</h1>
+        </body>
+        </html>
+    `);
 });
+
 
 
 const port = process.env.PORT || 3000;
