@@ -184,7 +184,7 @@ app.get('/states/:state/capital', validateState, (req, res) => {
     const stateData = statesData.find(s => s.code === req.state);
     res.json({
         state: req.stateName,
-        capital: stateData.capital
+        capital: stateData.capital_city
     });
 });
 
