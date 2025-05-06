@@ -216,6 +216,15 @@ app.get('/states/:state/nickname', validateState, async (req, res) => {
     });
 });
 
+app.get('/states/:state/capital', validateState, (req, res) => {
+    const stateData = statesData.find(s => s.code.toUpperCase() === req.state);
+    res.json({
+        state: stateData.state,
+        capital: stateData.capital_city
+    });
+});
+
+
 app.get('/states/:state/population', validateState, async (req, res) => {
     const state = req.state; 
     const stateData = statesData.find((s) => s.code.toUpperCase() === state);
