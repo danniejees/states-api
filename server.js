@@ -27,17 +27,18 @@ mongoose.connect(process.env.MONGODB_URI, {
 });
 
 const validateState = (req, res, next) => {
-    const state = req.params.state ? req.params.state.toUpperCase() : null;
+    const stateCode = req.params.state ? req.params.state.toUpperCase() : null;
 
-    const validStateCodes = statesData.map(state => state.code.toUpperCase());
-
-    if (!validStateCodes.includes(state)) {
-        return res.status(400).json({ error: 'Invalid state abbreviation parameter' });
+    const validState = statesData.find(s => s.code.toUpperCase() === stateCode);
+    if (!validState) {
+        return res.status(400).json({ message: 'Invalid state abbreviation parameter' });
     }
 
-    req.state = state;  
+    req.state = stateCode;       
+    req.stateName = validState.state; 
     next();
 };
+
 
 
 app.get('/', (req, res) => {
